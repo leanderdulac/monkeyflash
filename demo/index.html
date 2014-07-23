@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="https://raw.githubusercontent.com/tobia/Pause/master/jquery.pause.min.js"></script>
+		<script type="text/javascript" src="../src/monkeyflash.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				var manager = new MonkeyFlash.Manager($('.animation-container'), [
+					{
+						keyframes: [
+							{
+								length: 10000,
+								element: '#mouse-cursor',
+								actions: [{
+									kind: 'move',
+									easing: 'swing',
+									target: '#target',
+									position: 'center',
+									offset: {
+										x: 600,
+										y: 600
+									}
+								}]
+							}
+						]
+					}
+				]);
+
+				$('#start').click(function() {
+					manager.start();
+				});
+
+				$('#pause').click(function() {
+					manager.pause();
+				});
+
+				$('#resume').click(function() {
+					manager.resume();
+				});
+			});
+		</script>
+
+		<style>
+			#mouse-cursor {
+				width: 10px;
+				height: 15px;
+				background-color: red;
+				position: absolute;
+				z-index: 100;
+			}
+
+			#target {
+				top: 600px;
+				left: 600px;
+				width: 40px;
+				height: 40px;
+				background-color: green;
+				position: absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<input id="start" type="button" value="Start"</button>
+		<input id="pause" type="button" value="Pause"></button>
+		<input id="resume" type="button" value="Resume"></button>
+		<div class="animation-container">
+			<input id="letext"></input>
+			<div id="mouse-cursor"></div>
+			<div id="target"></div>
+		</div>
+	</body>
+</html>
+
