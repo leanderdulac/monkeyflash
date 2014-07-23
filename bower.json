@@ -1,0 +1,21 @@
+{
+  "name": "monkeyflash",
+  "version": "0.1.0",
+  "homepage": "https://github.com/pagarme/monkeyflash",
+  "authors": [
+    "Jonathan Lima <jonathan@pagar.me>"
+  ],
+  "description": "Awesome HTML animation toolbelt",
+  "main": "src/monkeyflash.js",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
