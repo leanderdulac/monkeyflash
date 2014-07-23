@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Keyboard Lab</title>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				var running = false;
+				var keys = [];
+				var last = 0;
+
+				$('body').keypress(function(e) {
+					if (!running) {
+						return;
+					}
+
+					var diff = last == 0 ? 0 : e.timeStamp - last;
+
+					last = e.timeStamp;
+
+					keys.push(diff);
+				});
+
+				$('#start').click(function() {
+					running = true;
+					keys = [];
+					last = 0;
+				});
+
+				$('#stop').click(function() {
+					running = false;
+					console.log(keys);
+
+					$('#graph').highcharts({
+            yAxis: {
+                title: {
+                    text: 'Time'
+                }
+            },
+            tooltip: {
+                valueSuffix: 'ms'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                name: 'Keys',
+                data: keys
+            }]
+        });
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<input id="start" type="button" value="Start"</button>
+		<input id="stop" type="button" value="Stop"></button>
+		<div id="graph"></div>
+	</body>
+</html>
+

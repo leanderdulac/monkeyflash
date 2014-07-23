@@ -84,7 +84,7 @@
 
 			return this.element.find(selector);
 		};
-		
+
 		this.schedule = function(time, cb) {
 			setTimeout(function() {
 				cb();
@@ -138,7 +138,7 @@
 
 		manager.finished = cb;
 		manager.start();
-		
+
 		return manager;
 	};
 
@@ -165,6 +165,146 @@
 			element.resume();
 		};
 	});
+
+	MonkeyFlash.registerAction('click', function(manager, keyframe, action, cb) {
+		var elementSelector = keyframe.element || '@self';
+		var element = manager.findElement(elementSelector);
+		var clickElement = element;
+
+		if (action.target) {
+			clickElement = element.find(action.target);
+		}
+
+		this.start = function() {
+			if (!element) {
+				return cb();
+			}
+
+			element.toggleClass('mf-fake-hover');
+			element.trigger('mouseenter');
+			element.focus();
+
+			setTimeout(function() {
+				clickElement.trigger('click');
+
+				element.toggleClass('mf-fake-hover');
+				element.trigger('mouseleave');
+				
+				cb();
+			}, action.length || keyframe.length || 0);
+		};
+	});
+
+	MonkeyFlash.registerAction('sleep', function(manager, keyframe, action, cb) {
+		this.start = function() {
+			setTimeout(cb, action.length || keyframe.length || 0);
+		};
+	});
+
+	MonkeyFlash.registerAction('sendkeys', function(manager, keyframe, action, cb) {
+		var minThreshold = action.minThreshold || 70, maxThreshold = action.maxThreshold || 150, errorThreshold = action.errorThreshold || 0.06;
+		var errorChars = action.onlyNumbers ? '0123456789' : 'qwertyuiopasdfghjklzxcvbnm1234567890';
+
+		var elementSelector = keyframe.element || '@self';
+		var element = manager.findElement(elementSelector);
+		var paused = false, current = 0, deleteNext = false;
+
+		this.append = function(chr) {
+			var code = chr.charCodeAt(0);
+
+			element.trigger(jQuery.Event("keydown", { keyCode: code }));
+			element.trigger(jQuery.Event("keypress", { keyCode: code }));
+
+			element.val(element.val() + chr);
+
+			element.trigger(jQuery.Event("keyup", { keyCode: code }));
+		};
+
+		this.backspace = function() {
+			element.trigger(jQuery.Event("keydown", { keyCode: 9 }));
+			element.trigger(jQuery.Event("keypress", { keyCode: 9 }));
+
+			var val = element.val();
+
+			val = val.substring(0, val.length - 1);
+
+			element.val(val);
+			
+			element.trigger(jQuery.Event("keyup", { keyCode: 9 }));
+		};
+
+		this.step = function() {
+			var self = this;
+			var isError = false;
+
+			if (current >= action.text.length) {
+				element.trigger(jQuery.Event("change", {}));
+				return cb();
+			}
+
+			if (deleteNext) {
+				this.backspace();
+				deleteNext = false;
+			} else {
+				isError = Math.random() <= errorThreshold;
+
+				this.append(isError ? errorChars[Math.round(Math.random() * (errorChars.length - 1))] : action.text[current]);
+
+				if (isError) {
+					deleteNext = true;
+				} else {
+					current++;
+				}
+			}
+
+			if (!paused && current <= action.text.length) {
+				var time = minThreshold + Math.random() * (maxThreshold - minThreshold);
+
+				if (isError) {
+					time *= 1.7;
+				}
+
+				setTimeout(function() {
+					self.step();
+				}, time);
+			}
+		};
+
+		this.start = function() {
+			if (!element) {
+				return cb();
+			}
+
+			element.focus();
+			this.step();
+		};
+
+		this.pause = function() {
+			paused = true;
+		};
+
+		this.resume = function() {
+			paused = false;
+			this.step();
+		};
+	});
+
+			MonkeyFlash.registerAction('waitforinput', function(manager, keyframe, action, cb) {	
+			var elementSelector = keyframe.element || '@self';
+			var element = manager.findElement(elementSelector);
+
+			this.start = function() {
+				var self = this;
+
+				if (element.val() != '') {
+					return cb();
+				}
+
+				setTimeout(function() {
+					self.start();
+				}, 50);
+			};
+		});
 
 	MonkeyFlash.Manager = Manager;
 
