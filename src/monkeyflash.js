@@ -202,7 +202,7 @@
 	});
 
 	MonkeyFlash.registerAction('sendkeys', function(manager, keyframe, action, cb) {
-		var minThreshold = action.minThreshold || 70, maxThreshold = action.maxThreshold || 150, errorThreshold = action.errorThreshold || 0.06;
+		var minThreshold = action.minThreshold || 70, maxThreshold = action.maxThreshold || 150, errorThreshold = action.errorThreshold || 0;
 		var errorChars = action.onlyNumbers ? '0123456789' : 'qwertyuiopasdfghjklzxcvbnm1234567890';
 
 		var elementSelector = keyframe.element || '@self';
