@@ -14,7 +14,9 @@
 			};
 
 			for (var i = 0; i < properties.actions.length; i++) {
-				manager.beginAction(properties, properties.actions[i], check);
+				setTimeout(function() {
+					manager.beginAction(properties, properties.actions[i], check);
+				}, properties.actions[i].startDelay || 0);
 			}
 		};
 	};
