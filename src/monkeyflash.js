@@ -3,6 +3,12 @@
 	var actions = {};
 	var MonkeyFlash = {};
 
+	var buildBeginAction_ = function(manager, properties, action, check) {
+		return function() {
+			manager.beginAction(properties, action, check);
+		};
+	};
+
 	var Keyframe = function(manager, animation, properties) {
 		this.start = function() {
 			var remaining = properties.actions.length;
@@ -14,9 +20,7 @@
 			};
 
 			for (var i = 0; i < properties.actions.length; i++) {
-				setTimeout(function() {
-					manager.beginAction(properties, properties.actions[i], check);
-				}, properties.actions[i].startDelay || 0);
+				setTimeout(buildBeginAction_(manager, properties, properties.actions[i], check), properties.actions[i].startDelay || 0);
 			}
 		};
 	};
